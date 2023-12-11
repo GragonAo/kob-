@@ -18,6 +18,7 @@ public class LoginInterceptors implements HandlerInterceptor {  //登入拦截�
         //验证JWT令牌
         try {
             Map<String, Object> claims = JwtUtil.parseToken(token);
+            System.out.println(claims);
             //存入ThreadLocal
             ThreadLocalUtil.set(claims);
             //放行

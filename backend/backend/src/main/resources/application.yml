@@ -8,4 +8,4 @@ server:
   port: 3300
 mybatis:
   configuration:
-    map-underscore-to-camel-case: true  #???????????????
+    map-underscore-to-camel-case: true

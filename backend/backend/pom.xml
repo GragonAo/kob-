@@ -28,12 +28,13 @@
             <scope>test</scope>
         </dependency>
 
-        <!--        mybatis的起步依赖-->
+        <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.3</version>
         </dependency>
+
         <!--        mysql驱动依赖-->
         <dependency>
             <groupId>com.mysql</groupId>
