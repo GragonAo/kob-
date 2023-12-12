@@ -13,6 +13,10 @@ import java.util.Map;
 public class LoginInterceptors implements HandlerInterceptor {  //登入拦截器
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 允许OPTIONS请求通过
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
         //获取JWT令牌
         String token = request.getHeader("Authorization");
         //验证JWT令牌

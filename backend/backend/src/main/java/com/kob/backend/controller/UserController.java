@@ -6,7 +6,6 @@ import com.kob.backend.service.UserService;
 import com.kob.backend.utils.JwtUtil;
 import com.kob.backend.utils.Md5Util;
 import com.kob.backend.utils.ThreadLocalUtil;
-import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

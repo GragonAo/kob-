@@ -1,3 +1,4 @@
+import type { UserInfo } from "@/types/user";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 /**用户store */
@@ -5,9 +6,9 @@ export const useUserStore = defineStore(
     'user',
     ()=>{
         /** 用户信息 */
-        const profile = ref()
+        const profile = ref<UserInfo>()
         /** 设置用户信息 */
-        const setProfile =(val:any)=>{
+        const setProfile =(val:UserInfo)=>{
             profile.value = val;
         }
         /** 清空用户信息 */

@@ -1,7 +1,7 @@
 import { useUserStore } from "@/stores";
 
 const baseURL = 
-'https://pcapi-xiaotuxian-front-devtest.itheima.net';
+'http://127.0.0.1:3300';
 
 //添加拦截器
 const httpInterceptor = {

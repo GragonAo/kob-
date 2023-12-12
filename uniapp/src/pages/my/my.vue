@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useUserStore } from '@/stores';
 import Setting from './components/setting/setting.vue';
-
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
-
+const userStore = useUserStore();
 </script>
 
 <template>
@@ -13,11 +13,11 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
       <!-- 情况1：已登录 -->
       <view class="overview" v-if="true">
         <navigator url="/pagesMember/profile/profile" hover-class="none">
-          <image class="avatar" src="" mode="aspectFill"></image>
+          <image class="avatar" :src="userStore.profile?.photo" mode="aspectFill"></image>
         </navigator>
         <view class="meta">
           <view class="nickname">
-            nihao
+            {{ userStore.profile?.username }}
           </view>
           <navigator class="extra" url="/pagesMember/profile/profile" hover-class="none">
             <text class="update">更新头像昵称</text>
@@ -25,7 +25,7 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
         </view>
       </view>
       <!-- 情况2：未登录 -->
-      <view class="overview" v-else> ...省略 </view>
+      <view class="overview" v-else>  </view>
     </view>
     <!-- 设置列表 -->
     <view class="settings">

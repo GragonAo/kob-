@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { postRegisterAPI } from '@/services/user';
 import { ref } from 'vue';
 /** 用户登录信息 */
 const form = ref<{
@@ -10,8 +11,22 @@ const form = ref<{
   rePassword:string;
 }>({account:'',password:'',rePassword:''});
 
-const onSubmit = ()=>{
-
+const onSubmit = async ()=>{
+  await postRegisterAPI({
+    username:form.value.account,
+    pwd:form.value.password,
+    re_pwd:form.value.rePassword
+  });
+  uni.showToast({
+    icon:'success',
+    title:'注册成功'
+  })
+  setTimeout(()=>{
+    uni.hideTabBar();
+    uni.navigateTo({
+      url:'/pages/login/login',
+    })
+  },500);
 }
 </script>
 <template>

@@ -1,5 +1,21 @@
 <script setup lang="ts">
-//
+import { useUserStore } from '@/stores';
+
+const userStore = useUserStore();
+/** 退出按钮 */
+const onExitClick = ()=>{
+  uni.showModal({
+    title:'确定退出账号吗？',
+    success:(res)=>{
+      if(res.confirm){
+        userStore.clearProfile();
+        uni.navigateTo({
+          url:'/pages/login/login'
+        })
+      }
+    },
+  })
+}
 </script>
 
 <template>
@@ -22,7 +38,7 @@
     </view>
     <!-- 操作按钮 -->
     <view class="action">
-      <view class="button">退出登录</view>
+      <view class="button" @click="onExitClick">退出登录</view>
     </view>
   </view>
 </template>

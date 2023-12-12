@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { getUserInfoAPI, postLoginWebeAPI } from '@/services/user';
+import { useUserStore } from '@/stores';
 import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 /** 用户登录信息 */
 const form = ref<{
   /** 用户名 */
@@ -7,9 +10,32 @@ const form = ref<{
   /** 密码 */
   password:string
 }>({account:'',password:''});
-const onSubmit = ()=>{
 
+const userStore = useUserStore();
+const onSubmit =async ()=>{
+ const res = await postLoginWebeAPI(form.value.account,form.value.password);
+ userStore.setProfile({token:res.result}); 
+ const data = await getUserInfoAPI();
+ userStore.setProfile({...data.result,token:res.result});
+ uni.showToast({
+  icon:'success',
+  title:'登录成功',
+ });
+ setTimeout(() => {
+    uni.hideToast();
+    uni.switchTab({
+      url:'/pages/index/index',
+    })
+  }, 1000);
 }
+
+onLoad(() => {
+  if(userStore.profile?.token){
+      uni.switchTab({
+        url:'/pages/index/index',
+      })
+  }
+})
 </script>
 <template>
   <view class="viewport">
@@ -20,18 +46,17 @@ const onSubmit = ()=>{
     </view>
     <view class="login">
       <!-- 网页端表单登录 -->
-      <!-- #ifdef H5 -->
+
       <input v-model="form.account" class="input" type="text" placeholder="请输入用户名/手机号码" />
       <input v-model="form.password" class="input" type="text" password placeholder="请输入密码" />
       <button @tap="onSubmit" class="button phone">登录</button>
-      <!-- #endif -->
 
       <!-- 小程序端授权登录 -->
       <!-- #ifdef MP-WEIXIN -->
-      <button class="button phone" open-type="getPhoneNumber" @getphonenumber="">
+      <!-- <button class="button phone" open-type="getPhoneNumber" @getphonenumber="">
         <text class="icon icon-phone"></text>
         手机号快捷登录
-      </button>
+      </button> -->
       <!-- #endif -->
       <view class="extra">
         <view class="caption">
