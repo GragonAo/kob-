@@ -9,6 +9,7 @@ import com.kob.backend.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,15 +75,18 @@ public class UserController {
         return Result.success(user);
 
     }
-    @PatchMapping("/updatePhoto")
-    public Result updatePhoto(@RequestBody Map<String, String> data){
-        String url = data.get("url");
-        // 确保url不为空且符合URL格式
-        if (url != null && url.matches("^(http|https)://.*")) {
-            userService.updatePhoto(url);
-            return Result.success();
-        } else {
-            return Result.error("提供的URL无效");
+    @PostMapping("/updatePhoto")
+    public Result updatePhoto(@RequestPart("file") MultipartFile file){
+        try {
+            if (file.isEmpty()) {
+                return Result.error("上传的文件为空");
+            }
+            // 保存文件到服务器，并获取其URL
+            String url = userService.updatePhoto(file);
+            return Result.success(url);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return Result.error("服务器内部错误");
         }
     }
 }

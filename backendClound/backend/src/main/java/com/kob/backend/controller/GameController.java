@@ -1,10 +1,15 @@
 package com.kob.backend.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.kob.backend.assets.scripts.Game;
 import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.mapper.UserMapper;
+import com.kob.backend.pojo.BattleRecord;
 import com.kob.backend.pojo.Result;
 import com.kob.backend.pojo.User;
+import com.kob.backend.service.BattleRecordService;
+import com.kob.backend.service.GameSerive;
 import com.kob.backend.utils.ThreadLocalUtil;
 import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +26,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/game")
 public class GameController {
+
     @Autowired
-    private UserMapper userMapper;
+    private GameSerive gameSerive;
+    @Autowired
+    private BattleRecordService battleRecordService;
     @PostMapping("/setNextStep")
     public Result setNextStep(@RequestBody Map<String,String>data){
         System.out.println("SetNextStep "+data);
@@ -39,26 +47,25 @@ public class GameController {
         return Result.success();
     }
     @PostMapping("/startGame")
-    public void startGame(@RequestBody Map<String,String> data){
-        List<Integer> list = new ArrayList<>();
-        for(String id : data.values()){
-            Integer playerId = Integer.parseInt(id);
-            if(WebSocketServer.users.get(playerId) != null){
-                list.add(playerId);
+    public String startGame(@RequestBody Map<String,String> data){
+        try{
+            System.out.println("本局游戏玩家："+data);
+            List<Integer> list = new ArrayList<>();
+            for(String id : data.values()){
+                Integer playerId = Integer.parseInt(id);
+                if(WebSocketServer.users.get(playerId) != null){
+                    list.add(playerId);
+                }
             }
-        }
-        if(list.size()!=data.size()){
-            for(Integer id : list){
-                User user = userMapper.selectById(id);
-                Map<String,String> sendData = new HashMap<>();
-                sendData.put("user_id",id.toString());
-                sendData.put("rating",user.getRating().toString());
-                WebSocketServer.sendHTTPMessage(MatchingController.matchingAddPlayerUrl,sendData);
+            BattleRecord battleRecord = gameSerive.startGame(list,data.size());
+            battleRecordService.addBattleRecord(battleRecord);
+            if(battleRecord == null){
+                return "匹配中断";
             }
-            return;
+        }catch (Exception e){
+            e.printStackTrace();
+            return "匹配中断";
         }
-        Game game = new Game(list);
-        game.run();
-        WebSocketServer.games.put(game.getGameId(),game);
+        return "匹配成功";
     }
 }

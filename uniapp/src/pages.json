@@ -1,4 +1,14 @@
 {
+	// 组件自动引入规则
+	"easycom": {
+		// 是否开启自动扫描 @/components/$1/$1.vue 组件
+		"autoscan": true,
+		// 以正则方式自定义组件匹配规则
+		"custom": {
+			// uni-ui 规则如下配置
+			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+		}
+	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/login/login",
@@ -30,6 +40,12 @@
 			"path": "pages/hello/hello",
 			"style": {
 				"navigationBarTitleText": "测试页"
+			}
+		},
+		{
+			"path": "pages/bot/bot",
+			"style": {
+				"navigationBarTitleText": "机器人页"
 			}
 		}
 	],

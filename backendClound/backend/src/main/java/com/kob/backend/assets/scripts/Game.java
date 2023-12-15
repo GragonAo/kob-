@@ -3,10 +3,16 @@ package com.kob.backend.assets.scripts;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kob.backend.consumer.WebSocketServer;
+import com.kob.backend.mapper.BattleRecordMapper;
+import com.kob.backend.mapper.BotMapper;
+import com.kob.backend.pojo.BattleRecord;
+import com.kob.backend.service.BattleRecordService;
+import com.kob.backend.service.impl.BattleRecordServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-
 
 public class Game extends Thread {
     private enum STATUS{//游戏状态
@@ -14,7 +20,11 @@ public class Game extends Thread {
         PLYING,//游戏中
         FINISHED,//结束
     }   //游戏状态
-
+    private enum RESULT{
+        ALL,//所有
+        WIN,//胜利
+        LOSE,//失败
+    }   //游戏结果
     private String gameId;  //游戏ID
     private Integer step;   //当前游戏进度
     private GameMap gameMap;    //游戏地图
@@ -27,6 +37,7 @@ public class Game extends Thread {
             new Cell(r-2, 1),
             new Cell(1, c-2)
     };
+    private BattleRecordMapper battleRecordMapper;
     //游戏内所有玩家
     private Map<Integer,Player> players = new HashMap<>();
     public Game(List<Integer>playerIdList){
@@ -39,7 +50,7 @@ public class Game extends Thread {
         this.gameMap = new GameMap(r,c,inerWallsCount);
         gameMap.createMap();
         for(int i = 0;i<players.size();i++){
-            players.get(i).setPlayerPos(playersPosArray[i]);
+            players.get(playerIdList.get(i)).setPlayerPos(playersPosArray[i]);
         }
     }   //构造函数
 
@@ -49,6 +60,7 @@ public class Game extends Thread {
 
     public void setNextStep(Integer playerId,Integer op){
         lock.lock();
+        System.out.println(playerId+"的操作是："+op);
         for (Player player: players.values()){
             if(player.getId() == playerId){
                 player.setNextStepOp(op);
@@ -72,13 +84,16 @@ public class Game extends Thread {
                 try{
                     boolean flag = true;
                     for (Player player:players.values()) {
-                        if(player.getNextStepOp()!=null){
-                            player.addOpatorList(player.getNextStepOp());
-                        }else{
-                            flag = false;
+                        if(player.getNextStepOp()==null){
+                            flag = false;break;
                         }
                     }
-                    if(flag)return true;
+                    if(flag){
+                        for (Player player:players.values()) {
+                            player.addOpatorList(player.getNextStepOp());
+                        }
+                        return true;
+                    }
                 }finally {
                     lock.unlock();
                 }
@@ -96,14 +111,14 @@ public class Game extends Thread {
         List<Cell> cellList = players.get(playerId).getCellList();
         int n = cellList.size();
         Cell cell = cellList.get(n-1);
-        if(cell.r>=r || cell.c>=c || gameMap.getMap()[cell.r][cell.c] == 1)return false;
-        for(int i =0;i<n;i++){
+        if(cell.r>=r || cell.c>=c || cell.r <0 || cell.r <0 || gameMap.getMap()[cell.r][cell.c] == 1)return false;
+        for(int i =0;i<n-1;i++){
             if(cellList.get(i).r == cell.r && cellList.get(i).c == cell.c)return false;
         }
         for(Player player:players.values()){
             if(player.getId() == playerId)continue;
             List<Cell> tempCell = player.getCellList();
-            for(int i =0;i<tempCell.size();i++){
+            for(int i =0;i<tempCell.size()-1;i++){
                 if(tempCell.get(i).r == cell.r && tempCell.get(i).c == cell.c)return false;
             }
         }
@@ -122,13 +137,17 @@ public class Game extends Thread {
     private void sendCountDown(Integer time){
         JSONObject resp = new JSONObject();
         resp.put("event","game-countdown");
-        resp.put("time",time);
-        System.out.println(time);
+        JSONObject data = new JSONObject();
+        data.put("time",time);
+        resp.put("data",data.toJSONString());
+        sendAllMessage(resp.toJSONString());
     }   //发送倒计时
+
 
     private void sendMove(){
         JSONObject resp = new JSONObject();
         resp.put("event","game-move");
+        JSONObject data = new JSONObject();
         List<JSONObject>movelist = new ArrayList<>();
         for(Player player:players.values()){
             JSONObject json = new JSONObject();
@@ -136,10 +155,11 @@ public class Game extends Thread {
             json.put("op",player.getNextStepOp());
             movelist.add(json);
         }
-        resp.put("dir_list",movelist);
+        data.put("dir_list",movelist);
         for(Player player:players.values()){
             player.setNextStepOp(null);
         }
+        resp.put("data",data.toJSONString());
         sendAllMessage(resp.toJSONString());
         System.out.println("sendMove");
     }   //发送移动信息
@@ -147,29 +167,33 @@ public class Game extends Thread {
     private void sendResult(){
         JSONObject resp = new JSONObject();
         resp.put("event","game-result");
+        Integer res = -1;
         for(Player player:players.values()){
+            JSONObject data = new JSONObject();
             if(playerDieCount() == players.size()){
-                resp.put("result","ALL");
+                data.put("result",RESULT.ALL.toString());
             }else if(player.getIsDie()){
-                resp.put("result","LOSE");
+                data.put("result",RESULT.LOSE.toString());
             }else{
-                resp.put("result","WIN");
+                data.put("result",RESULT.WIN.toString());
+                res = player.getId();
             }
+            resp.put("data",data.toJSONString());
             player.sendMessage(resp.toJSONString());
         }
+        List<Integer>playerIdList = new ArrayList<>();
+        for (Integer id : players.keySet()){
+            playerIdList.add(id);
+        }
+
+        BattleRecordServiceImpl.updateResult(gameId,res);
         WebSocketServer.games.remove(gameId);
     }   //发送结束信息
-
-    class PlayerItem{
-        Integer playerId;
-        Integer row;
-        Integer col;
-        public PlayerItem(Integer id,Integer r,Integer c){playerId = id;row = r;col=c;}
-    }   //初始化玩家数据格式
     private void startGame(){
         JSONObject resp = new JSONObject();
         resp.put("event","start-game");
-        resp.put("game_id",gameId.toString());
+        JSONObject data = new JSONObject();
+        data.put("game_id",gameId.toString());
         List<JSONObject> playerItems = new ArrayList<>();
         for(Player player:players.values()){
             JSONObject json = new JSONObject();
@@ -178,14 +202,15 @@ public class Game extends Thread {
             json.put("col",player.getStartCell().c);
             playerItems.add(json);
         }
-        resp.put("player_items",playerItems);
-        resp.put("game_map",gameMap.getMap());
+        data.put("player_items",playerItems);
+        data.put("game_map",gameMap.getMap());
+        resp.put("data",data.toJSONString());
         sendAllMessage(resp.toJSONString());
     }   //开始游戏
     private Integer playerDieCount(){
         Integer count = 0;
         for (Player player:players.values()) {
-            if(!player.getIsDie())count++;
+            if(player.getIsDie())count++;
         }
         return count;
     }   //玩家存活数量
@@ -196,6 +221,11 @@ public class Game extends Thread {
     @Override
     public void run() {
         status = STATUS.PLYING;
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         startGame();
         try {
             Thread.sleep(1800);
@@ -210,9 +240,11 @@ public class Game extends Thread {
                     sendMove();
                 } else if(status == STATUS.FINISHED){
                     sendResult();
+                    break;
                 }
             }
             else {
+                System.out.println(playerDieCount());
                 if (playerDieCount() == 0) {
                     status = STATUS.FINISHED;
                     lock.lock();

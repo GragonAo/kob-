@@ -6,43 +6,49 @@ import { onLoad } from '@dcloudio/uni-app';
 /** 用户登录信息 */
 const form = ref<{
   /** 用户名 */
-  account:string;
+  account: string;
   /** 密码 */
-  password:string
-}>({account:'',password:''});
+  password: string
+}>({ account: '', password: '' });
 
 const userStore = useUserStore();
-const onSubmit =async ()=>{
- const res = await postLoginWebeAPI(form.value.account,form.value.password);
- userStore.setProfile({token:res.result}); 
- const data = await getUserInfoAPI();
- userStore.setProfile({...data.result,token:res.result});
- uni.showToast({
-  icon:'success',
-  title:'登录成功',
- });
- setTimeout(() => {
-    uni.hideToast();
-    uni.switchTab({
-      url:'/pages/index/index',
-    })
-  }, 1000);
+const onSubmit = async () => {
+  const res = await postLoginWebeAPI(form.value.account, form.value.password);
+  if (res.code == 0) {
+    userStore.setProfile({ token: res.result });
+    const data = await getUserInfoAPI();
+    userStore.setProfile({ ...data.result, token: res.result });
+    uni.showToast({
+      icon: 'success',
+      title: '登录成功',
+    });
+    setTimeout(() => {
+      uni.hideToast();
+      uni.switchTab({
+        url: '/pages/index/index',
+      })
+    }, 1000);
+  }else{
+    uni.showToast({
+      icon: 'error',
+      title: res.msg
+    });
+  }
+
 }
 
 onLoad(() => {
-  if(userStore.profile?.token){
-      uni.switchTab({
-        url:'/pages/index/index',
-      })
+  if (userStore.profile?.token) {
+    uni.switchTab({
+      url: '/pages/index/index',
+    })
   }
 })
 </script>
 <template>
   <view class="viewport">
     <view class="logo">
-      <image
-        src="@/static/images/logo.jpg"
-      ></image>
+      <image src="@/static/images/logo.jpg"></image>
     </view>
     <view class="login">
       <!-- 网页端表单登录 -->
@@ -86,6 +92,7 @@ page {
 .logo {
   flex: 1;
   text-align: center;
+
   image {
     width: 220rpx;
     height: 220rpx;
@@ -118,6 +125,7 @@ page {
     font-size: 28rpx;
     border-radius: 72rpx;
     color: #fff;
+
     .icon {
       font-size: 40rpx;
       margin-right: 6rpx;
@@ -135,6 +143,7 @@ page {
   .extra {
     flex: 1;
     padding: 70rpx 70rpx 0;
+
     .caption {
       width: 440rpx;
       line-height: 1;
@@ -142,6 +151,7 @@ page {
       font-size: 26rpx;
       color: #999;
       position: relative;
+
       text {
         transform: translate(-40%);
         background-color: #fff;
@@ -156,9 +166,11 @@ page {
       justify-content: center;
       align-items: center;
       margin-top: 70rpx;
+
       button {
         padding: 0;
         background-color: transparent;
+
         &::after {
           border: none;
         }
@@ -184,6 +196,7 @@ page {
         border-radius: 50%;
       }
     }
+
     .icon-weixin::before {
       border-color: #06c05f;
       color: #06c05f;
@@ -199,5 +212,4 @@ page {
   font-size: 22rpx;
   color: #999;
   text-align: center;
-}
-</style>
+}</style>

@@ -1,10 +1,6 @@
 package com.kob.backend.assets.scripts;
 
-import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
-import com.kob.backend.pojo.Bot;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +10,12 @@ public class Player {
     private Integer id; //玩家ID
     private  Integer r; //初始化玩家位置x
     private  Integer c; //初始化玩家位置y
-    private WebSocketServer socket;
     private List<Integer> opatorList;   //玩家操作记录
     private int[] dx = {1,0,-1,0},dy = {0,1,0,-1};  //移动方位
     private Integer nextStepOp = null;      //玩家下一步操作
     private  boolean isDie = false; //玩家是否死亡
     public Player(Integer id){
         this.id = id;
-        this.socket = WebSocketServer.users.get(id);
         opatorList = new ArrayList<>();
     }   //构造函数
     public void setPlayerPos(Cell cell){
@@ -66,8 +60,8 @@ public class Player {
         return step % 3 == 1;
     }   //检查长度变化
     public void sendMessage(String message){
-        if(socket != null){
-            socket.sendMessage(message);
+        if(WebSocketServer.users.containsKey(id)){
+            WebSocketServer.users.get(id).sendMessage(message);
         }
     }   //向客户端发送消息
 }

@@ -1,9 +1,6 @@
 import { createSSRApp, onMounted } from "vue";
 import App from "./App.vue";
-import { createPinia } from 'pinia';
 import pinia from "./stores";
-import { useUserStore } from './stores';
-
 export function createApp() {
   const app = createSSRApp(App);
   app.use(pinia);

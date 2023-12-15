@@ -9,13 +9,13 @@ public class MatchingServiceImpl implements MatchingService {
     public final static MatchingPool matchingPool = new MatchingPool();
     @Override
     public String addPlayer(Integer userId, Integer rating) {
-        matchingPool.addPlayer(userId,rating);
-        return "Matching AddPlayer: "+userId+" Success";
+        boolean res = matchingPool.addPlayer(userId,rating);
+        return res? "success":"用户已经存在匹配池";
     }
 
     @Override
     public String removePlayer(Integer userId) {
-        matchingPool.removePlayer(userId);
-        return "Matching RemovePlayer: "+userId+" Success";
+        boolean res = matchingPool.removePlayer(userId);
+        return res? "success":"用户从匹配移除出现异常";
     }
 }

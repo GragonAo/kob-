@@ -4,37 +4,43 @@ import { ref } from 'vue';
 /** 用户登录信息 */
 const form = ref<{
   /** 用户名 */
-  account:string;
+  account: string;
   /** 密码 */
-  password:string;
+  password: string;
   /** 确认密码 */
-  rePassword:string;
-}>({account:'',password:'',rePassword:''});
+  rePassword: string;
+}>({ account: '', password: '', rePassword: '' });
 
-const onSubmit = async ()=>{
-  await postRegisterAPI({
-    username:form.value.account,
-    pwd:form.value.password,
-    re_pwd:form.value.rePassword
+const onSubmit = async () => {
+  const res = await postRegisterAPI({
+    username: form.value.account,
+    pwd: form.value.password,
+    re_pwd: form.value.rePassword
   });
-  uni.showToast({
-    icon:'success',
-    title:'注册成功'
-  })
-  setTimeout(()=>{
-    uni.hideTabBar();
-    uni.navigateTo({
-      url:'/pages/login/login',
+  if (res.code == 0) {
+    uni.showToast({
+      icon: 'success',
+      title: '注册成功'
     })
-  },500);
+    setTimeout(() => {
+      uni.hideTabBar();
+      uni.navigateTo({
+        url: '/pages/login/login',
+      })
+    }, 500);
+  } else {
+    uni.showToast({
+      icon: 'error',
+      title: res.msg
+    });
+  }
+
 }
 </script>
 <template>
   <view class="viewport">
     <view class="logo">
-      <image
-        src="@/static/images/logo.jpg"
-      ></image>
+      <image src="@/static/images/logo.jpg"></image>
     </view>
     <view class="register">
       <!-- 网页端表单注册 -->
@@ -62,6 +68,7 @@ page {
 .logo {
   flex: 1;
   text-align: center;
+
   image {
     width: 220rpx;
     height: 220rpx;
@@ -94,6 +101,7 @@ page {
     font-size: 28rpx;
     border-radius: 72rpx;
     color: #fff;
+
     .icon {
       font-size: 40rpx;
       margin-right: 6rpx;
@@ -111,6 +119,7 @@ page {
   .extra {
     flex: 1;
     padding: 70rpx 70rpx 0;
+
     .caption {
       width: 440rpx;
       line-height: 1;
@@ -118,6 +127,7 @@ page {
       font-size: 26rpx;
       color: #999;
       position: relative;
+
       text {
         transform: translate(-40%);
         background-color: #fff;
@@ -132,9 +142,11 @@ page {
       justify-content: center;
       align-items: center;
       margin-top: 70rpx;
+
       button {
         padding: 0;
         background-color: transparent;
+
         &::after {
           border: none;
         }
@@ -160,6 +172,7 @@ page {
         border-radius: 50%;
       }
     }
+
     .icon-weixin::before {
       border-color: #06c05f;
       color: #06c05f;
@@ -175,5 +188,4 @@ page {
   font-size: 22rpx;
   color: #999;
   text-align: center;
-}
-</style>
+}</style>

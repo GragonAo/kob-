@@ -1,7 +1,7 @@
 import type { UserInfo } from "@/types/user";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-/**用户store */
+/** 用户相关信息存储器 */
 export const useUserStore = defineStore(
     'user',
     ()=>{
@@ -39,3 +39,9 @@ export const useUserStore = defineStore(
     }
 
 )
+/** 用户相关信息存储器类型接口 */
+export interface UserStore {
+    profile: UserInfo | undefined;
+    setProfile: (val: UserInfo) => void;
+    clearProfile: () => void;
+}

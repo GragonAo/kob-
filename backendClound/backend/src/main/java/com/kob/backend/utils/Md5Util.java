@@ -42,7 +42,15 @@ public class Md5Util {
         String s = getMD5String(password);
         return s.equals(md5PwdStr);
     }
-
+    //获取文件后缀
+    public static String getFileExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex > 0 && lastDotIndex < fileName.length() - 1) {
+            return "." + fileName.substring(lastDotIndex + 1);
+        } else {
+            return "";
+        }
+    }
 
     public static String getMD5String(byte[] bytes) {
         messagedigest.update(bytes);

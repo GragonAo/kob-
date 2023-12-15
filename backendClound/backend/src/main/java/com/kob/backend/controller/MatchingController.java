@@ -32,7 +32,11 @@ public class MatchingController {
             toData.put("user_id",id.toString());
             User user = userMapper.selectById(id);
             toData.put("rating",user.getRating().toString());
-            WebSocketServer.sendHTTPMessage(matchingAddPlayerUrl,toData);
+            String res = WebSocketServer.sendHTTPMessage(matchingAddPlayerUrl,toData);
+            System.out.println(res);
+            if(!"success".equals(res)){
+                return Result.error(res);
+            }
         }catch (Exception e){
             e.printStackTrace();
             return Result.error("添加用户到匹配池失败");
@@ -51,7 +55,10 @@ public class MatchingController {
             }
             Map<String,String> toData = new HashMap<>();
             toData.put("user_id",id.toString());
-            WebSocketServer.sendHTTPMessage(matchingRemovePlayerUrl,toData);
+            String res = WebSocketServer.sendHTTPMessage(matchingRemovePlayerUrl,toData);
+            if(!"success".equals(res)){
+                return Result.error(res);
+            }
         }catch (Exception e){
             e.printStackTrace();
             return Result.error("从匹配池移除用户失败");

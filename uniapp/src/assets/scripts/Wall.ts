@@ -16,6 +16,15 @@ export class Wall extends AcGameObject {
         this.gamemap = gamemap;
         this.color = "#B37226";
     }
+    override start(): void {
+        this.render();
+    }
+    override destroy(): void {
+        super.destroy();
+    }
+    override update(): void {
+        this.render();    
+    }
     render() {
         /*使用const定义的变量保存的是一个地址值，
         这个地址指向一个对象引用。const保证这个地址值是不可变的，

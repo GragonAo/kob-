@@ -1,9 +1,66 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
 import Setting from './components/setting/setting.vue';
+import { http, upLoad } from '@/utils/http';
+import { checkFile } from '@/utils/checkFile';
+import { onLoad } from '@dcloudio/uni-app';
+import { getUserInfoAPI } from '@/services/user';
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const userStore = useUserStore();
+// 修改头像
+const onPhotoChange = () => {
+  // 调用拍照/选择图片
+  // 选择图片条件编译
+  // #ifdef H5 || APP-PLUS
+  // 微信小程序从基础库 2.21.0 开始， wx.chooseImage 停止维护，请使用 uni.chooseMedia 代替
+  uni.chooseImage({
+    count: 1,
+    success: (res) => {
+      // 文件路径
+      const tempFilePaths = res.tempFilePaths
+      // 上传
+      uploadPhoto(tempFilePaths[0])
+    },
+  })
+  // #endif
+  // #ifdef MP-WEIXIN
+  // uni.chooseMedia 仅支持微信小程序端
+  uni.chooseMedia({
+    // 文件个数
+    count: 1,
+    // 文件类型
+    mediaType: ['image'],
+    success: (res) => {
+      // 本地路径
+      const { tempFilePath } = res.tempFiles[0]
+      // 上传
+      uploadPhoto(tempFilePath)
+    },
+  })
+  // #endif
+}
+// 文件上传-兼容小程序端、H5端、App端
+const uploadPhoto = async (file: string) => {
+  console.log(file);
+  const res = await upLoad({
+    url: '/user/updatePhoto',
+    name: 'file',
+    filePath: file
+  })
+  if(res.code == 0){
+    const vlaue = res.result as string;
+    userStore.profile!.photo! = vlaue;
+  }
+}
+const getUserInfo = async ()=>{
+  const data = await getUserInfoAPI();
+  const old = userStore.profile;
+  userStore.setProfile({...data.result,token:old?.token});
+}
+onLoad(()=>{
+  getUserInfo();
+})
 </script>
 
 <template>
@@ -13,15 +70,15 @@ const userStore = useUserStore();
       <!-- 情况1：已登录 -->
       <view class="overview" v-if="true">
         <navigator url="/pagesMember/profile/profile" hover-class="none">
-          <image class="avatar" :src="userStore.profile?.photo" mode="aspectFill"></image>
+          <image class="avatar" :src="checkFile(userStore.profile?.photo)" mode="aspectFill"></image>
         </navigator>
         <view class="meta">
           <view class="nickname">
             {{ userStore.profile?.username }}
           </view>
-          <navigator class="extra" url="/pagesMember/profile/profile" hover-class="none">
+          <view class="extra"  hover-class="none" @click="onPhotoChange">
             <text class="update">更新头像昵称</text>
-          </navigator>
+          </view>
         </view>
       </view>
       <!-- 情况2：未登录 -->

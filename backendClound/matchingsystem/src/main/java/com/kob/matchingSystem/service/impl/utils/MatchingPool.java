@@ -23,17 +23,21 @@ public class MatchingPool extends Thread{
     public void setRestTemplate(RestTemplate restTemplate){
         MatchingPool.restTemplate = restTemplate;
     }
-    public void addPlayer(Integer userId,Integer rating){
+    public boolean addPlayer(Integer userId,Integer rating){
         lock.lock();
         try{
+            if(MatchingPool.playerList.contains(userId)){
+                return false;
+            }
             MatchingPool.playerList.add(new Player(userId,rating,0));
         }
         finally {
             lock.unlock();
         }
+        return true;
     }
 
-    public void removePlayer(Integer userId){
+    public boolean removePlayer(Integer userId){
         lock.lock();
         try{
             List<Player> temp = new ArrayList<>();
@@ -43,10 +47,14 @@ public class MatchingPool extends Thread{
                 }
             }
             MatchingPool.playerList = temp;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
         finally {
             lock.unlock();
         }
+        return true;
     }
     private boolean checkMatched(Player a, Player b){
         Integer differenceValue = Math.abs(a.getRating() - b.getRating());
@@ -54,10 +62,12 @@ public class MatchingPool extends Thread{
         return differenceValue <= waiting * 10;
     }
     private void sendResult(Player a,Player b){
+        if(restTemplate == null)return;
         Map<String,String> resp = new HashMap<>();
         resp.put("a_id",a.getUserId().toString());
         resp.put("b_id",b.getUserId().toString());
         restTemplate.postForObject(startGameUrl,resp,String.class);
+        System.out.println("匹配完成： "+resp);
     }
     private void increaseWaitingTime(){
         for(Player player : playerList){

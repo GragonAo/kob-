@@ -19,7 +19,6 @@ public class MatchingController {
 
     @PostMapping("/matching/player/add/")
     public String addPlayer(@RequestBody Map<String,String> data){
-        System.out.println(data );
         Integer userId = Integer.parseInt(Objects.requireNonNull(data.get("user_id")));
         Integer rating = Integer.parseInt(Objects.requireNonNull(data.get("rating")));
         return matchingService.addPlayer(userId,rating);

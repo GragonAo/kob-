@@ -1,12 +1,16 @@
 import { useUserStore } from "@/stores";
+ 
+export const baseURL = 
+'https://xmut.shop';
 
-const baseURL = 
-'http://127.0.0.1:3300';
+// export const baseURL = 
+// 'http://127.0.0.1:3300';
 
 //添加拦截器
 const httpInterceptor = {
     //拦截前触发
     invoke(options:UniApp.RequestOptions){
+        console.log(options.url);
         //1. 非 http 开头需拼接基地址
         if(!options.url.startsWith('http')){
             options.url = baseURL+options.url;
@@ -32,7 +36,7 @@ uni.addInterceptor('uploadFile',httpInterceptor);
 
 //固定格式
 interface Data<T>{
-    code:string
+    code:number
     msg:string
     result: T
 }
@@ -72,4 +76,36 @@ export const http = <T>(option : UniApp.RequestOptions)=>{
             }
         })
     })
+}
+export const upLoad =<T>(option : UniApp.UploadFileOption)=>{
+    return new Promise<Data<T>>((resolve,reject)=>{
+        uni.uploadFile({
+        ...option,
+        //2. 请求成功
+        success(res){
+            if(res.statusCode>=200 && res.statusCode<300){
+                //2.1 提取核心数据 res.data
+                resolve(JSON.parse(res.data) as Data<T>)
+            }else if(res.statusCode === 401){
+                //401错误
+                reject(res);
+            }else{
+                //其他错误 根据后端错误信息提示
+                uni.showToast({
+                    title: (JSON.parse(res.data) as Data<T>).msg || '请求错误',
+                    icon: 'none'
+                });
+                reject(res);
+            }
+        },
+        //响应失败
+        fail(err){
+            uni.showToast({
+                title:'网络错误',
+                icon:'none'
+            });
+            reject(err);
+        }
+    })
+})
 }

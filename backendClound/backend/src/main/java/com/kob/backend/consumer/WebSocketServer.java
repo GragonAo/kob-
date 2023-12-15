@@ -1,5 +1,6 @@
 package com.kob.backend.consumer;
 import com.kob.backend.assets.scripts.Game;
+import com.kob.backend.controller.MatchingController;
 import com.kob.backend.utils.JwtUtil;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -39,12 +41,19 @@ public class WebSocketServer {
         }
         userId =(Integer)parseToken.get("id");
         System.out.println("建立连接");
+        if(users.containsKey((userId))){
+            users.get(userId).onClose();
+        }
         users.put(userId,this);
     }
     @OnClose
     public void onClose() {
         if(userId!=null){
             users.remove(userId);
+            //如果在匹配池，移除用户
+            Map<String,String> toData = new HashMap<>();
+            toData.put("user_id",userId.toString());
+            WebSocketServer.sendHTTPMessage(MatchingController.matchingRemovePlayerUrl,toData);
         }
         // 关闭链接
         System.out.println("关闭连接");
@@ -67,8 +76,8 @@ public class WebSocketServer {
             }
         }
     }
-    public static void sendHTTPMessage(String url, Map<String,String> data){
-        if(restTemplate == null)return;
-        restTemplate.postForObject(url,data,String.class);
+    public static String sendHTTPMessage(String url, Map<String,String> data){
+        if(restTemplate == null)return "";
+        return restTemplate.postForObject(url,data,String.class);
     }
 }

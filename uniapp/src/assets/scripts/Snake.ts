@@ -57,6 +57,8 @@ export class Snake extends AcGameObject {
     start() {
         // 实现 start 方法
     }
+    /** 获取蛇的ID */
+    public getID():number{return this.id;}
     /** 返回蛇当前状态 */
     public getState(): STATE {
         return this.status;
@@ -151,6 +153,10 @@ export class Snake extends AcGameObject {
         if (this.status === STATE.MOVE) {
             this.update_move();
         }
+        this.render();
+    }
+    override destroy(): void {
+        super.destroy();
     }
     render() {
         // 获取高宽比率

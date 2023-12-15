@@ -1,7 +1,9 @@
 <template>
 	<view class="gamemap">
-		<canvas style="width: 400px; height: 400px; background-color: wheat;" canvas-id="canvas"></canvas>
-		<view class="player-input">
+		<canvas ref="canvas" :style="{ width: gameStore.gameCanvas?.width + 'px',
+		 height:gameStore.gameCanvas?.height+'px',
+		 backgroundColor: 'wheat' }" canvas-id="canvas"></canvas>		
+		 <view class="player-input">
 		<button @click="onBtnUpClick">
 			上
 		</button>
@@ -22,40 +24,59 @@
 <script setup lang="ts">
 import { loop } from '@/assets/scripts/AcGameObject';
 import { GameMap } from '@/assets/scripts/GameMap';
-import { useGameMapStore } from '@/stores/modules/gameMap';
+import { useGameStore } from '@/stores/modules/game';
+import { useInstaceStore } from '@/stores/modules/instace';
+import AnimationFramePolyfill from '@/utils/AnimationFramePolyfill';
 import { ref } from 'vue';
+import { onUnmounted } from 'vue';
 import { getCurrentInstance } from 'vue';
 import { onMounted } from 'vue';
-const gameMap = ref<GameMap>();
+const canvas = ref<null|HTMLCanvasElement>(null);
+const gameStore = useGameStore();
+const instaceStore = useInstaceStore();
+const animationFramePolyfill = ref<AnimationFramePolyfill>()
+const animationId = ref(-1);
 onMounted(() => {
+	console.log("GameMapVue被调用了")
 	const instance = getCurrentInstance();
 	const ctx = uni.createCanvasContext("canvas", instance);
-	const gameMapStore = useGameMapStore();
-	gameMapStore.setGameMapInfo(ctx);
-	loop();
+	gameStore.setGameCanvas({
+		ctx:ctx,
+		width:400,
+		height:400
+	})
+	animationFramePolyfill.value = new AnimationFramePolyfill();
+	animationId.value = loop(animationFramePolyfill.value);
   if(ctx){
-    gameMap.value = new GameMap(ctx);
-  }
+    const game = new GameMap(ctx);
+	instaceStore.setGameObject(game);
+ }
 });
 
+onUnmounted(()=>{
+	if (animationFramePolyfill.value && animationId.value !== -1) {
+        animationFramePolyfill.value.cancelAnimationFrame(animationId.value);
+      }
+})
+
 const onBtnUpClick = ()=>{
-	if(gameMap){
-		gameMap.value?.next_step(0);
+	if(instaceStore.gameObject){
+		instaceStore.gameObject?.add_listening_events(0);
 	}
 }
 const onBtnDownClick = ()=>{
-	if(gameMap){
-		gameMap.value?.next_step(2);
+	if(instaceStore.gameObject){
+		instaceStore.gameObject?.add_listening_events(2);
 	}
 }
 const onBtnLeftClick = ()=>{
-	if(gameMap){
-		gameMap.value?.next_step(3);
+	if(instaceStore.gameObject){
+		instaceStore.gameObject?.add_listening_events(3);
 	}
 }
 const onBtnRightClick = ()=>{
-	if(gameMap){
-		gameMap.value?.next_step(1);
+	if(instaceStore.gameObject){
+		instaceStore.gameObject?.add_listening_events(1);
 	}
 }
 </script>
