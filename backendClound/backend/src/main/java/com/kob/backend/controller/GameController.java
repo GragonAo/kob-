@@ -1,17 +1,11 @@
 package com.kob.backend.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.kob.backend.assets.scripts.Game;
 import com.kob.backend.consumer.WebSocketServer;
-import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.BattleRecord;
-import com.kob.backend.pojo.Result;
-import com.kob.backend.pojo.User;
+import com.kob.backend.request.Result;
 import com.kob.backend.service.BattleRecordService;
 import com.kob.backend.service.GameSerive;
 import com.kob.backend.utils.ThreadLocalUtil;
-import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

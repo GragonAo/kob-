@@ -1,19 +1,14 @@
 <template>
-  <view class="matching-block">
-    <view class="player-block">
-      <view class="player-info" v-if="!gameStore.userList">
-        <image v-if="userStore.profile" class="head-portrait" :src="checkFile(userStore.profile?.photo)" />
-        <image v-else class="head-portrait" src="/static/images/defPhoto.png" />
-        <text class="player-username">{{ userStore.profile?.username }}</text>
-      </view>
-      <view class="player-info" v-for="item in gameStore.userList" :key="item.id">
-        <image class="head-portrait" :src="checkFile(item.photo)" />
-          <text class="player-username">{{ item.username }}</text>
-      </view>
-    </view>
-    <button @click="startMatching" v-if="gameStore.gameState === GameState.Null && !gameStore.userList" class="start-matching">开始匹配</button>
-    <button @click="unMatching" v-if="gameStore.gameState === GameState.Matching && !gameStore.userList" class="start-matching">取消匹配</button>
+  <view class="Season-bg">
+    <text class="Season-txt">S1赛季</text>
   </view>
+  <view class="content">
+    <image class="rating-bg" 
+    :src= "imgValue"  />
+    <text class="rating-txt">{{ txtValue }}</text>
+  </view>
+  <button class="Start-Btn" v-if="gameStore.gameState === GameState.Null && !gameStore.userList" @click="startMatching">开始对战吧！</button>
+  <button class="Start-Btn" v-if="gameStore.gameState === GameState.Matching && !gameStore.userList" @click="unMatching">取消对战！</button>
 </template>
 
 <script setup lang="ts">
@@ -22,8 +17,31 @@ import { addPlayerToMatchingAPI, removePlayerToMatchingAPI } from '@/services/ma
 import { useUserStore } from '@/stores';
 import { useGameStore } from '@/stores/modules/game';
 import { checkFile } from '@/utils/checkFile';
+import { computed } from 'vue';
 const userStore = useUserStore();
 const gameStore = useGameStore();
+const imgValue = computed(()=>{
+    let res = checkFile("/uploads/logo.jpg");
+    if(gameStore.userList?.length){
+        gameStore.userList?.forEach(player => {
+            if(player.id !== userStore.profile?.id){
+              res = checkFile(player.photo);
+            }
+        });
+    }
+    return res;
+});
+const txtValue = computed(()=>{
+  let txt = userStore.profile?.rating?.toString();
+    if(gameStore.userList?.length){
+        gameStore.userList?.forEach(player => {
+            if(player.id !== userStore.profile?.id){
+              txt = player.username;
+            }
+        });
+    }
+    return txt;
+})
 /** 开始匹配 */
 const startMatching = async () => {
   const res = await addPlayerToMatchingAPI();
@@ -50,50 +68,76 @@ const unMatching = async () => {
 }
 </script>
 
-<style lang='scss'>
-.matching-block {
-  width: 690rpx;
-  align-content: center;
+<style lang='scss' scoped>
+.Season-bg {
+  width: 100%;
+  height: 10%;
+  background-color: rgb(38, 81, 165);
+  display: flex;
+  align-items: center;
+  .Season-txt {
+    color: white;
+    font-size: 60rpx;
+    margin-left: 20rpx;
+    text-align: left;
+  }
+}
+
+.content {
+  width: 100%;
+  height: 70%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #B5EF61;
-  border-radius: 10px;
-  /* 添加阴影 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  .rating-bg {
+    margin-top: 20rpx;
+    width: 400rpx;
+    height: 400rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+  }
+
+  .rating-txt {
+    text-align: center;
+    font-size: 40rpx;
+    margin-top: 20rpx;
+  }
+
+  .Start-Btn {
+    margin-top: 50rpx;
+    background: #f8e172; /* 使用十六进制颜色值 */
+    color: #ca7731; /* 使用十六进制颜色值 */
+    border-radius: 10rpx;
+    text-align: center;
+    width: 90%;
+  }
 }
 
-.player-block {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  /* 平分两个 .player-info 之间的空间 */
-  width: 400rpx;
-  /* 调整 .player-block 的宽度，根据实际需要调整 */
-  margin-top: 10px;
+// Media queries for responsiveness
+@media screen and (max-width: 600px) {
+  .Season-txt {
+    font-size: 40rpx;
+    margin-left: 10rpx;
+  }
 
-}
+  .rating-bg {
+    width: 300rpx;
+    height: 300rpx;
+  }
 
-.player-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .rating-txt {
+    font-size: 30rpx;
+    margin-top: 10rpx;
+  }
 
-.head-portrait {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
-}
-
-.player-username {
-  margin-top: 10rpx;
-}
-
-.start-matching {
-  margin-top: 30rpx;
-  margin-bottom: 10rpx;
+  .Start-Btn {
+    margin-top: 20rpx;
+    width: 80%;
+  }
 }
 </style>

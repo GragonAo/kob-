@@ -2,7 +2,7 @@ package com.kob.backend.controller;
 
 import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.mapper.UserMapper;
-import com.kob.backend.pojo.Result;
+import com.kob.backend.request.Result;
 import com.kob.backend.pojo.User;
 import com.kob.backend.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/matching")

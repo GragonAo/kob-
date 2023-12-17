@@ -23,5 +23,6 @@ public class Bot {
     private LocalDateTime createtime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "Asia/Shanghai")
     private LocalDateTime modifytime;
+    private char isDefault ='0';
     public interface Update extends Default{}
 }

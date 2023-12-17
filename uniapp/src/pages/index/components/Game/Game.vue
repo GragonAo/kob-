@@ -27,10 +27,12 @@ import { GameMap } from '@/assets/scripts/GameMap';
 import { useGameStore } from '@/stores/modules/game';
 import { useInstaceStore } from '@/stores/modules/instace';
 import AnimationFramePolyfill from '@/utils/AnimationFramePolyfill';
-import { ref } from 'vue';
-import { onUnmounted } from 'vue';
 import { getCurrentInstance } from 'vue';
+import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
+import { ref } from 'vue';
+
+
 const canvas = ref<null|HTMLCanvasElement>(null);
 const gameStore = useGameStore();
 const instaceStore = useInstaceStore();

@@ -22,7 +22,7 @@ const onExitClick = ()=>{
   <view class="viewport">
     <!-- 列表1 -->
     <view class="list" v-if="true">
-      <navigator url="/pagesMember/address/address" hover-class="none" class="item arrow">
+      <navigator url="/pages/bot/bot" hover-class="none" class="item arrow">
         我的Bot
       </navigator>
     </view>

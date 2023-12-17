@@ -29,7 +29,7 @@ public class WebConfig implements WebMvcConfigurer {    //用于配置拦截器
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:*","http://www.xmut.shop") // 允许的源模式
+                .allowedOriginPatterns("http://localhost:*","https://www.xmut.shop","https://www.xmut.shop") // 允许的源模式
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") // 允许的HTTP方法
                 .allowedHeaders("*") // 允许的请求头
                 .allowCredentials(true) // 是否允许发送Cookie信息

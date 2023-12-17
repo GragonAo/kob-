@@ -24,8 +24,8 @@ public class BattleRecordServiceImpl implements BattleRecordService {
     }
 
     @Override
-    public List<BattleRecord> getBattleRecordList(Integer id) {
-        return battleRecordMapper.getBattleRecordList(id);
+    public List<BattleRecord> getBattleRecordList(Integer id,Integer start,Integer length) {
+        return battleRecordMapper.getBattleRecordList(id,start,length);
     }
 
     public boolean addBattleRecord(BattleRecord battleRecord){
@@ -40,6 +40,12 @@ public class BattleRecordServiceImpl implements BattleRecordService {
         }
         return true;
     }
+
+    @Override
+    public Integer getBattleRecordCount(Integer id) {
+        return battleRecordMapper.getBattleRecordCount(id);
+    }
+
     public static void updateResult(String gameId,Integer res){
         try{
             BattleRecord battleRecord = battleRecordMapper.getBattleRecordByGameId(gameId);

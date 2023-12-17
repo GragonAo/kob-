@@ -69,9 +69,9 @@ onLoad(()=>{
    <view class="profile" :style="{ paddingTop: safeAreaInsets!.top + 'px' }">
       <!-- 情况1：已登录 -->
       <view class="overview" v-if="true">
-        <navigator url="/pagesMember/profile/profile" hover-class="none">
+        <view hover-class="none">
           <image class="avatar" :src="checkFile(userStore.profile?.photo)" mode="aspectFill"></image>
-        </navigator>
+        </view>
         <view class="meta">
           <view class="nickname">
             {{ userStore.profile?.username }}

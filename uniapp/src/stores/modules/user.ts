@@ -1,4 +1,5 @@
 import type { UserInfo } from "@/types/user";
+import { checkFile } from "@/utils/checkFile";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 /** 用户相关信息存储器 */
@@ -9,6 +10,7 @@ export const useUserStore = defineStore(
         const profile = ref<UserInfo>()
         /** 设置用户信息 */
         const setProfile =(val:UserInfo)=>{
+            val.photo = checkFile(val.photo);
             profile.value = val;
         }
         /** 清空用户信息 */

@@ -9,7 +9,9 @@ public interface BotService {
 
     Integer addBot(Bot bot);
 
-    Integer updateBot(Bot bot);
+    Integer updateBot(Bot bot,boolean isUpdateTime);
 
     Bot getBot(Integer id);
+
+    Integer deleteBot(Integer id,Integer userId);
 }

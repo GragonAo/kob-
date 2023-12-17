@@ -1,7 +1,7 @@
 package com.kob.backend.controller;
 
 import com.kob.backend.pojo.User;
-import com.kob.backend.pojo.Result;
+import com.kob.backend.request.Result;
 import com.kob.backend.service.UserService;
 import com.kob.backend.utils.JwtUtil;
 import com.kob.backend.utils.Md5Util;

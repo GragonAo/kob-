@@ -1,4 +1,4 @@
-package com.kob.backend.pojo;
+package com.kob.backend.request;
 
 
 import lombok.AllArgsConstructor;

@@ -32,13 +32,20 @@ public class BotServiceImpl implements BotService {
     }
 
     @Override
-    public Integer updateBot(Bot bot) {
-        bot.setModifytime(LocalDateTime.now());
+    public Integer updateBot(Bot bot,boolean isUpdateTime) {
+        if(isUpdateTime){
+            bot.setModifytime(LocalDateTime.now());
+        }
         return botMapper.updateBot(bot);
     }
 
     @Override
     public Bot getBot(Integer id) {
         return botMapper.getBot(id);
+    }
+
+    @Override
+    public Integer deleteBot(Integer id,Integer userId) {
+        return botMapper.deleteBot(id,userId);
     }
 }

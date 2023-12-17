@@ -17,6 +17,7 @@ export const socketMessageHnadle = (resp: string) => {
         const data: GameInfo = JSON.parse(json.data);
         gameStore.setGameInfo(data);
         gameStore.setGameState(GameState.Game);
+        //uni.navigateTo({ url: '/pages/playGround/playGround' })
     }
     if (json.event === "game-countdown") {
         const data: GameCountDown = JSON.parse(json.data);

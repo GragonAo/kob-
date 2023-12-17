@@ -1,6 +1,6 @@
 package com.kob.backend.exception;
 
-import com.kob.backend.pojo.Result;
+import com.kob.backend.request.Result;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
