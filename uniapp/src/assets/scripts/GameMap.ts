@@ -49,6 +49,7 @@ export class GameMap extends AcGameObject {
                 }
             });
         });
+        this.gameStore.clearPlayerOperate();
     }
     /** 创建障碍物墙体 */
     private create_walls() {

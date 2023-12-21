@@ -7,7 +7,7 @@ export const useUserStore = defineStore(
     'user',
     ()=>{
         /** 用户信息 */
-        const profile = ref<UserInfo>()
+        const profile = ref<UserInfo>();
         /** 设置用户信息 */
         const setProfile =(val:UserInfo)=>{
             val.photo = checkFile(val.photo);

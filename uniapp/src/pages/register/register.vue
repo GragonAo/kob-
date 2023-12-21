@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { postRegisterAPI } from '@/services/user';
 import { ref } from 'vue';
+import type { UniFormsInstance } from '@uni-helper/uni-ui-types';
 /** 用户登录信息 */
 const form = ref<{
   /** 用户名 */
@@ -11,30 +12,60 @@ const form = ref<{
   rePassword: string;
 }>({ account: '', password: '', rePassword: '' });
 
+/** 表单校验规则 */
+const rules: UniHelper.UniFormsRules = {
+  account:
+  {
+    rules: [{ required: true, errorMessage: '请填写用户名' },
+    { pattern: /^[^\s]{5,16}$/, errorMessage: '请输入5到16位字符（不包括空格）' }
+    ],
+
+  },
+  password:
+  {
+    rules: [{ required: true, errorMessage: '请填写密码' },
+    { pattern: /^[^\s]{5,16}$/, errorMessage: '请输入5到16位字符（不包括空格）' }
+    ],
+  },
+  rePassword:
+  {
+    rules: [{ required: true, errorMessage: '请填写密码' },
+    { pattern: /^[^\s]{5,16}$/, errorMessage: '请输入5到16位字符（不包括空格）' }
+    ],
+  },
+}
+const formRef = ref<UniFormsInstance>();
 const onSubmit = async () => {
-  const res = await postRegisterAPI({
-    username: form.value.account,
-    pwd: form.value.password,
-    re_pwd: form.value.rePassword
-  });
-  if (res.code == 0) {
-    uni.showToast({
-      icon: 'success',
-      title: '注册成功'
-    })
-    setTimeout(() => {
-      uni.hideTabBar();
-      uni.navigateTo({
-        url: '/pages/login/login',
+  try {
+    await formRef.value.validate();
+    const res = await postRegisterAPI({
+      username: form.value.account,
+      pwd: form.value.password,
+      re_pwd: form.value.rePassword
+    });
+    if (res.code == 0) {
+      uni.showToast({
+        icon: 'success',
+        title: '注册成功'
       })
-    }, 500);
-  } else {
+      setTimeout(() => {
+        uni.hideTabBar();
+        uni.navigateTo({
+          url: '/pages/login/login',
+        })
+      }, 500);
+    } else {
+      uni.showToast({
+        icon: 'error',
+        title: res.msg
+      });
+    }
+  } catch (error) {
     uni.showToast({
       icon: 'error',
-      title: res.msg
+      title: '请按要求填写',
     });
   }
-
 }
 </script>
 <template>
@@ -44,11 +75,19 @@ const onSubmit = async () => {
     </view>
     <view class="register">
       <!-- 网页端表单注册 -->
-      <input v-model="form.account" class="input" type="text" placeholder="请输入用户名/手机号码" />
-      <input v-model="form.password" class="input" type="text" password placeholder="请输入密码" />
-      <input v-model="form.rePassword" class="input" type="text" password placeholder="再次输入密码" />
-      <button @tap="onSubmit" class="button phone">注册</button>
-      <view class="tips">登录/注册即视为你同意《服务条款》和《蛇蛇作战隐私协议》</view>
+      <uni-forms ref="formRef" :rules="rules" :model="form">
+        <uni-forms-item name="account">
+          <input v-model="form.account" class="input" placeholder="请输入用户名/手机号码" />
+        </uni-forms-item>
+        <uni-forms-item name="password">
+          <input v-model="form.password" class="input" password placeholder="请输入密码" />
+        </uni-forms-item>
+        <uni-forms-item name="rePassword">
+          <input v-model="form.rePassword" class="input" password placeholder="再次输入密码" />
+        </uni-forms-item>
+        <button @tap="onSubmit" class="button phone">注册</button>
+      </uni-forms>
+      <view class="tips">欢迎使用蛇蛇作战</view>
     </view>
   </view>
 </template>
@@ -188,4 +227,5 @@ page {
   font-size: 22rpx;
   color: #999;
   text-align: center;
-}</style>
+}
+</style>

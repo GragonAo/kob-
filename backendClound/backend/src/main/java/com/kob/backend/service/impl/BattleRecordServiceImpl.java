@@ -4,6 +4,7 @@ import com.kob.backend.mapper.BattleRecordMapper;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.BattleRecord;
 import com.kob.backend.service.BattleRecordService;
+import org.apache.ibatis.annotations.Insert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,11 @@ import java.util.List;
 public class BattleRecordServiceImpl implements BattleRecordService {
 
     private static BattleRecordMapper battleRecordMapper;
+    private static UserMapper userMapper;
+    @Autowired
+    private  void setUserMapper(UserMapper userMapper){
+        BattleRecordServiceImpl.userMapper = userMapper;
+    }
     @Autowired
     private void setBattleRecordMapper(BattleRecordMapper battleRecordMapper){
         BattleRecordServiceImpl.battleRecordMapper = battleRecordMapper;
@@ -46,11 +52,22 @@ public class BattleRecordServiceImpl implements BattleRecordService {
         return battleRecordMapper.getBattleRecordCount(id);
     }
 
-    public static void updateResult(String gameId,Integer res){
+    public static void updateResult(String gameId,Integer res,Integer step){
         try{
             BattleRecord battleRecord = battleRecordMapper.getBattleRecordByGameId(gameId);
             battleRecord.setResult(res);
-            Integer num = battleRecordMapper.updateResult(battleRecord);
+            battleRecordMapper.updateResult(battleRecord);
+            Integer score = 10+step/5;;
+            if(res == -1){
+                userMapper.updateRating(battleRecord.getUserId1(),0);
+                userMapper.updateRating(battleRecord.getUserId2(),0);
+            }else if(res == battleRecord.getUserId1()){
+                userMapper.updateRating(battleRecord.getUserId1(),score);
+                userMapper.updateRating(battleRecord.getUserId2(),-score);
+            }else{
+                userMapper.updateRating(battleRecord.getUserId1(),-score);
+                userMapper.updateRating(battleRecord.getUserId2(),score);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

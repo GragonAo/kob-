@@ -1,16 +1,28 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores';
+const onAbout = () => {
+  uni.showModal({
+    title: '制作人员：',
+    content:"软件工程8班: \n 李龙、宋宏鑫、朱必利",
+    showCancel: false,
+    success(res) {
+      if (res.confirm) {
+        console.log('用户点击确定');
+      }
+    }
+  });
+}
 
 const userStore = useUserStore();
 /** 退出按钮 */
-const onExitClick = ()=>{
+const onExitClick = () => {
   uni.showModal({
-    title:'确定退出账号吗？',
-    success:(res)=>{
-      if(res.confirm){
+    title: '确定退出账号吗？',
+    success: (res) => {
+      if (res.confirm) {
         userStore.clearProfile();
         uni.navigateTo({
-          url:'/pages/login/login'
+          url: '/pages/login/login'
         })
       }
     },
@@ -34,7 +46,7 @@ const onExitClick = ()=>{
     </view>
     <!-- 列表3 -->
     <view class="list">
-      <navigator hover-class="none" class="item arrow" url=" ">关于蛇蛇作战</navigator>
+      <view hover-class="none" class="item arrow" @click="onAbout">关于蛇蛇作战</view>
     </view>
     <!-- 操作按钮 -->
     <view class="action">
@@ -58,6 +70,7 @@ page {
   background-color: #fff;
   margin-bottom: 20rpx;
   border-radius: 10rpx;
+
   .item {
     line-height: 90rpx;
     padding-left: 10rpx;
@@ -68,19 +81,23 @@ page {
     text-align: left;
     border-radius: 0;
     background-color: #fff;
+
     &::after {
       width: auto;
       height: auto;
       left: auto;
       border: none;
     }
+
     &:first-child {
       border: none;
     }
+
     &::after {
       right: 5rpx;
     }
   }
+
   .arrow::after {
     content: '\e6c2';
     position: absolute;
@@ -99,10 +116,10 @@ page {
   margin-top: 40rpx;
   font-size: 32rpx;
   color: #333;
+
   .button {
     background-color: #fff;
     margin-bottom: 20rpx;
     border-radius: 10rpx;
   }
-}
-</style>
+}</style>

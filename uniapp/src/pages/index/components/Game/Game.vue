@@ -1,39 +1,21 @@
-<template>
-	<view class="gamemap">
-		<canvas ref="canvas" :style="{ width: gameStore.gameCanvas?.width + 'px',
-		 height:gameStore.gameCanvas?.height+'px',
-		 backgroundColor: 'wheat' }" canvas-id="canvas"></canvas>		
-		 <view class="player-input">
-		<button @click="onBtnUpClick">
-			上
-		</button>
-		<button @click="onBtnRightClick">
-			右
-		</button>
-		<button @click="onBtnDownClick">
-			下
-		</button>
-		<button @click="onBtnLeftClick">
-			左
-		</button>
-	</view>
-	</view>
-
-</template>
 
 <script setup lang="ts">
+import HexOptBtn from '../../../components/HexOptBtn/HexOptBtn.vue'
 import { loop } from '@/assets/scripts/AcGameObject';
 import { GameMap } from '@/assets/scripts/GameMap';
+import { useUserStore } from '@/stores';
 import { useGameStore } from '@/stores/modules/game';
 import { useInstaceStore } from '@/stores/modules/instace';
 import AnimationFramePolyfill from '@/utils/AnimationFramePolyfill';
 import { getCurrentInstance } from 'vue';
+import { watch } from 'vue';
+import { computed } from 'vue';
 import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
 import { ref } from 'vue';
 
 
-const canvas = ref<null|HTMLCanvasElement>(null);
+const canvas = ref<null | HTMLCanvasElement>(null);
 const gameStore = useGameStore();
 const instaceStore = useInstaceStore();
 const animationFramePolyfill = ref<AnimationFramePolyfill>()
@@ -43,56 +25,83 @@ onMounted(() => {
 	const instance = getCurrentInstance();
 	const ctx = uni.createCanvasContext("canvas", instance);
 	gameStore.setGameCanvas({
-		ctx:ctx,
-		width:400,
-		height:400
+		ctx: ctx,
+		width: 400,
+		height: 400
 	})
 	animationFramePolyfill.value = new AnimationFramePolyfill();
 	animationId.value = loop(animationFramePolyfill.value);
-  if(ctx){
-    const game = new GameMap(ctx);
-	instaceStore.setGameObject(game);
- }
+	if (ctx) {
+		const game = new GameMap(ctx);
+		instaceStore.setGameObject(game);
+	}
 });
 
-onUnmounted(()=>{
+onUnmounted(() => {
 	if (animationFramePolyfill.value && animationId.value !== -1) {
-        animationFramePolyfill.value.cancelAnimationFrame(animationId.value);
-      }
+		animationFramePolyfill.value.cancelAnimationFrame(animationId.value);
+	}
 })
-
-const onBtnUpClick = ()=>{
-	if(instaceStore.gameObject){
+const onBtnUpClick = () => {
+	if (instaceStore.gameObject) {
 		instaceStore.gameObject?.add_listening_events(0);
+		gameStore.playerOp ='上';
 	}
 }
-const onBtnDownClick = ()=>{
-	if(instaceStore.gameObject){
+const onBtnDownClick = () => {
+	if (instaceStore.gameObject) {
 		instaceStore.gameObject?.add_listening_events(2);
+		gameStore.playerOp ='下';
 	}
 }
-const onBtnLeftClick = ()=>{
-	if(instaceStore.gameObject){
+const onBtnLeftClick = () => {
+	if (instaceStore.gameObject) {
 		instaceStore.gameObject?.add_listening_events(3);
+		gameStore.playerOp ='左';
 	}
 }
-const onBtnRightClick = ()=>{
-	if(instaceStore.gameObject){
+const onBtnRightClick = () => {
+	if (instaceStore.gameObject) {
 		instaceStore.gameObject?.add_listening_events(1);
+		gameStore.playerOp ='右';
 	}
 }
 </script>
 
-<style scoped>
+<template>
+	<view class="gamemap">
+		倒计时：{{ gameStore.gameCountDownTime?.time }}
+		<canvas
+      ref="canvas"
+      :style="{
+        width: gameStore.gameCanvas?.width + 'px',
+        height: gameStore.gameCanvas?.height + 'px',
+        backgroundColor: 'wheat'
+      }"
+      canvas-id="canvas"
+    ></canvas>
+	{{ gameStore.playerOperate}}
+		<view class="btn-box">
+			<HexOptBtn @clickUp="onBtnUpClick" @clickRight="onBtnRightClick"
+				@clickDown="onBtnDownClick" @clickLeft="onBtnLeftClick" />
+		</view>
+	</view>
+
+</template>
+  
+<style lang="scss"  scoped>
 .gamemap {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }
-.player-input {
-  width: 100%;
+
+.btn-box {
+	display: flex;
+	justify-content: center;
 }
 </style>

@@ -37,7 +37,7 @@ const result = (item: BattleRecordInfo) => {
   return res;
 };
 const getBattleRecordData = async () => {
-  
+
   if (finish.value === true) {
     return uni.showToast({
       title: '没有更多数据啦～',
@@ -45,13 +45,15 @@ const getBattleRecordData = async () => {
     });
   }
   const res = await getBattleRecordAPI(pageParams);
-  recordList.value.push(...res.result.items);
-  console.log(res);
-  if (pageParams.page < res.result.pages) {
-    pageParams.page++;
-  } else {
-    finish.value = true;
+  if (res.code == 0) {
+    recordList.value.push(...res.result.items);
+    if (pageParams.page < res.result.pages) {
+      pageParams.page++;
+    } else {
+      finish.value = true;
+    }
   }
+
 };
 
 const resetData = () => {
@@ -69,8 +71,8 @@ onLoad(() => {
 <template>
   <view class="viewport">
     <!-- bot列表 -->
-    <scroll-view enable-back-to-top class="scroll-view"
-     scroll-y style="min-height: 100vh;" @scrolltolower="getBattleRecordData">
+    <scroll-view enable-back-to-top class="scroll-view" scroll-y style="min-height: 100vh;"
+      @scrolltolower="getBattleRecordData">
       <view v-if="recordList?.length" class="bot">
         <view class="bot-list">
           <view class="item" v-for="item in recordList" :key="item.gameId">
@@ -88,9 +90,10 @@ onLoad(() => {
             </view>
           </view>
         </view>
+        <view class="loading-text"> {{ finish ? '没有更多数据啦～' : '正在加载...' }} </view>
       </view>
       <view v-else class="blank">暂无对战记录</view>
-      <view class="loading-text"> {{ finish ? '没有更多数据啦～' : '正在加载...' }} </view>
+      
     </scroll-view>
   </view>
 </template>

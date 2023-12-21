@@ -186,7 +186,7 @@ public class Game extends Thread {
             playerIdList.add(id);
         }
 
-        BattleRecordServiceImpl.updateResult(gameId,res);
+        BattleRecordServiceImpl.updateResult(gameId,res,step);
         WebSocketServer.games.remove(gameId);
     }   //发送结束信息
     private void startGame(){

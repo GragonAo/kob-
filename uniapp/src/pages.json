@@ -37,12 +37,6 @@
 			}
 		},
 		{
-			"path": "pages/hello/hello",
-			"style": {
-				"navigationBarTitleText": "测试页"
-			}
-		},
-		{
 			"path": "pages/bot/bot",
 			"style": {
 				"navigationBarTitleText": "机器人列表页"
@@ -67,9 +61,9 @@
 			}
 		},
 		{
-			"path": "pages/playGround/playGround",
+			"path": "pages/hello/hello",
 			"style": {
-				"navigationBarTitleText": "游戏对战"
+				"navigationBarTitleText": "测试页"
 			}
 		}
 	],

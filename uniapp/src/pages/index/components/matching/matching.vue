@@ -14,12 +14,19 @@
 <script setup lang="ts">
 import { GameState } from '@/enums/game';
 import { addPlayerToMatchingAPI, removePlayerToMatchingAPI } from '@/services/matching';
+import { getUserInfoAPI } from '@/services/user';
 import { useUserStore } from '@/stores';
 import { useGameStore } from '@/stores/modules/game';
 import { checkFile } from '@/utils/checkFile';
+import { onMounted } from 'vue';
 import { computed } from 'vue';
 const userStore = useUserStore();
 const gameStore = useGameStore();
+const getUserInfo = async ()=>{
+  const data = await getUserInfoAPI();
+  const old = userStore.profile;
+  userStore.setProfile({...data.result,token:old?.token});
+}
 const imgValue = computed(()=>{
     let res = checkFile("/uploads/logo.jpg");
     if(gameStore.userList?.length){
@@ -66,6 +73,9 @@ const unMatching = async () => {
     })
   }
 }
+onMounted(()=>{
+  getUserInfo();
+})
 </script>
 
 <style lang='scss' scoped>

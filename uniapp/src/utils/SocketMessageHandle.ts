@@ -8,7 +8,7 @@ const instaceStore = useInstaceStore();
 /** 处理服务端发来的消息 */
 export const socketMessageHnadle = (resp: string) => {
     const json: ScoketInfo = JSON.parse(resp);
-    console.log('收到服务器内容：' + json.event + "\n" + json.data);
+    //console.log('收到服务器内容：' + json.event + "\n" + json.data);
     if (json.event === "users-in-game") {
         const data: UsersInfo = JSON.parse(json.data);
         gameStore.setUserList(data.user_list);
@@ -17,7 +17,6 @@ export const socketMessageHnadle = (resp: string) => {
         const data: GameInfo = JSON.parse(json.data);
         gameStore.setGameInfo(data);
         gameStore.setGameState(GameState.Game);
-        //uni.navigateTo({ url: '/pages/playGround/playGround' })
     }
     if (json.event === "game-countdown") {
         const data: GameCountDown = JSON.parse(json.data);
@@ -41,6 +40,7 @@ export const socketMessageHnadle = (resp: string) => {
         const data: PlayerOperate = JSON.parse(json.data);
         gameStore.setPlayerOperate(data.dir_list);
         instaceStore.gameObject?.setSnakesDir();
+        gameStore.playerOp = '未输入';
         //console.log("json.data的内容为：", json.data);
         //console.log("解析后的data为：", data);
         //console.log(data.dir_list[0].id,data.dir_list[0].op,data.dir_list[0].col,data.dir_list[0].row);

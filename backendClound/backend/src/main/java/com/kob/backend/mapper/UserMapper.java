@@ -15,4 +15,7 @@ public interface UserMapper {
 
     @Select("select  * from user where id=#{userId}")
     User selectById(Integer userId);
+    @Update("UPDATE user SET rating = rating + #{score} WHERE id = #{userId}")
+    void updateRating(@Param("userId") Integer userId, @Param("score") Integer score);
+
 }

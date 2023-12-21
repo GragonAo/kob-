@@ -23,6 +23,7 @@ export const useGameStore = defineStore(
         const gameState = ref<GameState>();
         /** 游戏中所有玩家信息 */
         const userList = ref<UserInfo[]>();
+        const playerOp = ref<string>('未输入');
         /** 初始化游戏存储器 */
         const initGameStore = () => {
             clearCountDownTime();
@@ -92,7 +93,7 @@ export const useGameStore = defineStore(
         }
 
         return {
-            gameInfo, gameCountDownTime, playerOperate, gameRusult, gameState,gameCanvas,userList,
+            gameInfo, gameCountDownTime, playerOperate, gameRusult, gameState,gameCanvas,userList,playerOp,
             setCountDownTime, setGameInfo, setGameRusult, setPlayerOperate, setGameState, initGameStore,setGameCanvas,setUserList,
             clearGameRusult, clearCountDownTime, clearGameInfo, clearPlayerOperate, clearGameState,clearGameCanvas,clearUserList
         }

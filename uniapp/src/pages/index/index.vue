@@ -6,7 +6,7 @@
     <view class="user-info">
     <view class="avatar-container">
       <image class="info-image" :src="userStore.profile?.photo" />
-      <image class="icon-image" :src="userStore.profile?.photo" />
+      <image class="icon-image" src="../../static/images/gold.png" />
     </view>
     <text class="info-name">{{ userStore.profile?.username }}</text>
   </view>
@@ -16,15 +16,15 @@
     </view>
     <view class="more-actions">
       <navigator @click="test">
-        <image class="icon" :src="userStore.profile?.photo"></image>
+        <image class="icon" src="../../static/images/ai.png"></image>
         <text class="text">练习赛</text>
       </navigator>
       <navigator url="/pages/raking/raking">
-        <image class="icon" :src="userStore.profile?.photo"></image>
+        <image class="icon" src="../../static/images/rating.png"></image>
         <text class="text">排行榜</text>
       </navigator>
       <navigator url="/pages/battleRecord/battleRecord">
-        <image class="icon" :src="userStore.profile?.photo"></image>
+        <image class="icon" src="../../static/images/vs.png"></image>
         <text class="text">对战记录</text>
       </navigator>
     </view>
@@ -42,6 +42,7 @@ import { useGameStore } from '@/stores/modules/game';
 import { useUserStore } from '@/stores';
 import { GameState } from '@/enums/game';
 import  Game from './components/Game/Game.vue';
+import { getUserInfoAPI } from '@/services/user';
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const gameStore = useGameStore();
 const userStore = useUserStore();
@@ -52,11 +53,19 @@ const test = ()=>{
     icon:'none'
   })
 }
+const getUserInfo = async ()=>{
+  const data = await getUserInfoAPI();
+  const old = userStore.profile;
+  userStore.setProfile({...data.result,token:old?.token});
+}
+const matchingRef = ref();
 //页面显示时
 onShow(() => {
+  getUserInfo();
   wbSocket.value = new connectWebSocket();
   wbSocket.value.socketTask();
   gameStore.initGameStore();
+
 });
 onHide(() => {
   wbSocket.value?.closeSocket();
@@ -80,7 +89,8 @@ onHide(() => {
   .avatar-container {
     display: flex;
     align-items: flex-end;
-    margin: 20rpx 0;
+    margin: 30rpx 0;
+    padding-left: 20rpx;
     position: relative;
 
     .info-image {
@@ -105,8 +115,9 @@ onHide(() => {
   .info-name {
     color: white;
     margin-top: 10rpx;
-    font-size: 100rpx;
+    font-size: 200rpx;
     margin-left: 10rpx;
+    padding-left: 20rpx;
   }
 }
 
@@ -151,8 +162,8 @@ onHide(() => {
     /* Styles for the icon (adjust as needed) */
     .icon {
       margin-top: 20rpx;
-      width: 80%; /* Adjust the size of the icon */
-      height: 80%; /* Adjust the size of the icon */
+      width: 130rpx; /* Adjust the size of the icon */
+      height: 100rpx; /* Adjust the size of the icon */
     }
 
     /* Styles for the text (adjust as needed) */

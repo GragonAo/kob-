@@ -23,6 +23,9 @@ const getRatingList = async () => {
   ratingList.value[0] = ratingList.value[1];
   ratingList.value[1] = temp;
 }
+const onStartBattle = ()=>{
+  uni.switchTab({ url: '/pages/index/index' });
+}
 onLoad(() => {
   getRatingList();
 })
@@ -44,7 +47,7 @@ onLoad(() => {
 
     <!-- 第二行，其他选手信息列表 -->
     <view class="container">
-      <scroll-view class="player-list" scroll-y style="height: calc(100vh - 200px);">
+      <scroll-view class="player-list" scroll-y >
         <view v-for="(otherPlayer, index) in ratingList?.slice(3, ratingList.length)" :key="index" class="player-item">
           <view class="left-container">
             <text class="player-rank">{{ index + 4 }}</text>
@@ -65,7 +68,7 @@ onLoad(() => {
       </view>
       <view class="right-container">
         <text class="my-score">{{ userStore.profile?.rating }}</text>
-        <button class="start-battle">开始对战</button>
+        <button class="start-battle" @click="onStartBattle">开始对战</button>
       </view>
     </view>
   </view>
@@ -120,12 +123,14 @@ onLoad(() => {
 }
 
 .player-list {
+  height: 950rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: rgb(255, 255, 255);
   width: 95%;
   border-radius: 30rpx;
+  padding-bottom: 10rpx;
 }
 
 .player-item {
