@@ -1,10 +1,10 @@
 import { useUserStore } from "@/stores";
  
-export const baseURL = 
-'https://xmut.shop';
-
 // export const baseURL = 
-// 'http://127.0.0.1:3300';
+// 'https://xmut.shop';
+
+export const baseURL = 
+'http://127.0.0.1:3300';
 
 //添加拦截器
 const httpInterceptor = {

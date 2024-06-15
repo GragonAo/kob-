@@ -1,8 +1,8 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://8.130.104.154:3306/kob
-    username: kob
+    url: jdbc:mysql://47.122.48.37:33068/kob
+    username: root
     password: aoliao123
   resources:
     static-locations: {classpath:/Users/gragon/uploads/}
